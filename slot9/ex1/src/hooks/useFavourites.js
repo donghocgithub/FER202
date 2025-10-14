@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 const useFavourites = () => {
   const [favourites, setFavourites] = useState([]);
 
-  // Load favourites from localStorage on component mount
+  // đưa vào localStorage 
   useEffect(() => {
     const savedFavourites = localStorage.getItem('movieFavourites');
     if (savedFavourites) {
@@ -22,7 +22,6 @@ const useFavourites = () => {
   }, [favourites]);
 
   const addToFavourites = (movie) => {
-    // Check if movie is already in favourites
     const isAlreadyFavourite = favourites.some(fav => fav.id === movie.id);
     
     if (!isAlreadyFavourite) {
