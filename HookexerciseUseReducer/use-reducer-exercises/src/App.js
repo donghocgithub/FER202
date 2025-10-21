@@ -5,13 +5,16 @@ import CounterComponent from './Components/CounterComponent/CounterComponent';
 import LoginForm from './Components/LoginFormComponent/LoginForm';
 import LightSwitch from './Components/LightSwitchComponent/LightSwitch';
 import QuestionBank from './Components/QuestionBankComponent/QuestionBank';
+import SignUpForm from './Components/SignupFormComponent/SignupForm';
 
 function App() {
   return (
     <div className="App">
+      
       <CounterComponent />
       <LightSwitch />
       <LoginForm />
+      <SignUpForm />
       <QuestionBank />
     </div>
   );
