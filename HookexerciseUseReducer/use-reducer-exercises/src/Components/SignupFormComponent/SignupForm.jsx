@@ -1,21 +1,27 @@
 import React, { useReducer } from 'react';
-import { Form, Button, Card, Container, Row, Col, Modal, InputGroup } from 'react-bootstrap';
+import { Form, Button, Card, Container, Row, Col, InputGroup } from 'react-bootstrap';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import Toast from '../Toast/Toast';
+import SuccessModal from '../SuccessModalComponent/SuccessModal';
 
 // Initial state
 const initialState = {
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
     errors: {},
     showModal: false,
     showPassword: false,
-    showConfirmPassword: false
+    showConfirmPassword: false,
+    toast: { show: false, message: '', type: '' }
 };
 
 // Reducer function đơn giản
 function formReducer(state, action) {
     switch (action.type) {
+        case 'SET_USERNAME':
+            return { ...state, username: action.value };
         case 'SET_EMAIL':
             return { ...state, email: action.value };
         case 'SET_PASSWORD':
@@ -43,6 +49,16 @@ function formReducer(state, action) {
                 ...state,
                 showConfirmPassword: !state.showConfirmPassword
             };
+        case 'SET_TOAST':
+            return {
+                ...state,
+                toast: action.value
+            };
+        case 'HIDE_TOAST':
+            return {
+                ...state,
+                toast: { show: false, message: '', type: '' }
+            };
         default:
             return state;
     }
@@ -50,9 +66,17 @@ function formReducer(state, action) {
 
 function SignUpForm({ onSubmit = () => {} }) {
     const [state, dispatch] = useReducer(formReducer, initialState);
-    const { email, password, confirmPassword, errors, showModal, showPassword, showConfirmPassword } = state;
+    const { username, email, password, confirmPassword, errors, showModal, showPassword, showConfirmPassword, toast } = state;
 
     // Validation functions
+    const validateUsername = (value) => {
+        if (value.trim() === '') return 'Username is required';
+        if (value.trim().length < 3) return 'Username must be at least 3 characters';
+        if (!/^[a-zA-Z0-9._]+$/.test(value)) return 'Username can only contain letters, numbers, . or _';
+        if (value !== value.trim()) return 'Username cannot have spaces at the beginning or end';
+        return '';
+    };
+    
     const validateEmail = (value) => {
         if (value.trim() === '') return 'Email is required';
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -77,10 +101,12 @@ function SignUpForm({ onSubmit = () => {} }) {
     
     const handleSubmit = (e) => {
         e.preventDefault();
+        const usernameError = validateUsername(username);
         const emailError = validateEmail(email);
         const passwordError = validatePassword(password);
         const confirmPasswordError = validateConfirmPassword(confirmPassword);
         const newErrors = {
+            username: usernameError,
             email: emailError,
             password: passwordError,
             confirmPassword: confirmPasswordError
@@ -89,12 +115,22 @@ function SignUpForm({ onSubmit = () => {} }) {
         const hasErrors = Object.values(newErrors).some(error => error !== '');
         if (!hasErrors) {
             dispatch({ type: 'SET_SHOW_MODAL', value: true });
-            onSubmit({ email, password, confirmPassword });
+            dispatch({ type: 'SET_TOAST', value: { show: true, message: 'Registration successful!', type: 'success' } });
+            onSubmit({ username, email, password, confirmPassword });
+        } else {
+            dispatch({ type: 'SET_TOAST', value: { show: true, message: 'Please fix the errors and try again!', type: 'error' } });
         }
     };
     
     const handleCloseModal = () => {
         dispatch({ type: 'RESET_FORM' });
+    };
+    
+    const handleUsernameChange = (e) => {
+        const value = e.target.value;
+        dispatch({ type: 'SET_USERNAME', value });
+        const error = validateUsername(value);
+        dispatch({ type: 'VALIDATE_FIELD', field: 'username', error });
     };
     
     const handleEmailChange = (e) => {
@@ -131,6 +167,10 @@ function SignUpForm({ onSubmit = () => {} }) {
     const toggleConfirmPasswordVisibility = () => {
         dispatch({ type: 'TOGGLE_CONFIRM_PASSWORD_VISIBILITY' });
     };
+    
+    const handleCloseToast = () => {
+        dispatch({ type: 'HIDE_TOAST' });
+    };
 
     return (
         <Container className="mt-5">
@@ -142,8 +182,21 @@ function SignUpForm({ onSubmit = () => {} }) {
                         </Card.Header>
                         <Card.Body>
                             <Form onSubmit={handleSubmit} noValidate>
+                                <Form.Group controlId="formUsername" className="mb-3">
+                                    <Form.Label style={{textAlign: 'left', display: 'block'}}>Username</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={username}
+                                        onChange={handleUsernameChange}
+                                        isInvalid={!!errors.username}
+                                        placeholder="Enter username"
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.username}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
                                 <Form.Group controlId="formEmail" className="mb-3">
-                                    <Form.Label>Email address</Form.Label>
+                                    <Form.Label style={{textAlign: 'left', display: 'block'}}>Email address</Form.Label>
                                     <Form.Control
                                         type="email"
                                         value={email}
@@ -156,7 +209,7 @@ function SignUpForm({ onSubmit = () => {} }) {
                                     </Form.Control.Feedback>
                                 </Form.Group>
                                 <Form.Group controlId="formPassword" className="mb-3">
-                                    <Form.Label>Password</Form.Label>
+                                    <Form.Label style={{textAlign: 'left', display: 'block'}}>Password</Form.Label>
                                     <InputGroup>
                                         <Form.Control
                                             type={showPassword ? "text" : "password"} 
@@ -178,7 +231,7 @@ function SignUpForm({ onSubmit = () => {} }) {
                                     </InputGroup>
                                 </Form.Group>
                                 <Form.Group controlId="formConfirmPassword" className="mb-3">
-                                    <Form.Label>Confirm Password</Form.Label>
+                                    <Form.Label style={{textAlign: 'left', display: 'block'}}>Confirm Password</Form.Label>
                                     <InputGroup>
                                         <Form.Control
                                             type={showConfirmPassword ? "text" : "password"}
@@ -199,27 +252,34 @@ function SignUpForm({ onSubmit = () => {} }) {
                                         </Form.Control.Feedback>
                                     </InputGroup>
                                 </Form.Group>
+                                <div style={{ display: 'flex', justifyContent: 'space-between',gap: '10px' }}>
                                 <Button variant="primary" type="submit" className="w-100">
                                     Sign Up
                                 </Button>
+                                <Button variant="secondary" type="button" className="w-100" onClick={() => dispatch({ type: 'RESET_FORM' })}>
+                                    Cancel
+                                </Button>
+                                </div>
                             </Form>
                         </Card.Body>
                     </Card>
                 </Col>  
             </Row>  
-            <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Sign Up Successful</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>Welcome, {email}!</p>    
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        Close
-                    </Button>
-                </Modal.Footer> 
-            </Modal>
+            
+            {/* Success Modal omponent */}
+            <SuccessModal
+                show={showModal} 
+                onHide={handleCloseModal}
+                userData={{ email }}
+            />
+            
+            {/* Toast Notification Component*/}
+            <Toast 
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.show}
+                onClose={handleCloseToast}
+            />
         </Container>
     );
 }
