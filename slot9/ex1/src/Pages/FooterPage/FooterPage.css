@@ -1,0 +1,24 @@
+.footer {
+  background-color: #f8f9fa;
+  padding: 2rem 0;
+  margin-top: 3rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.footer h2 {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.footer h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(45deg, #007bff, #28a745);
+  margin: 0.5rem auto 0;
+  border-radius: 2px;
+}
+

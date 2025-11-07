@@ -1,0 +1,33 @@
+/* Custom styles for React Router Exercise */
+
+.App {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* Active navigation link styling */
+.navbar-nav .nav-link.active {
+  background-color: #007bff !important;
+  color: white !important;
+  border-radius: 4px;
+}
+
+/* Card hover effect */
+.card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Button styling */
+.btn {
+  border-radius: 6px;
+}
+
+/* Container spacing */
+.container {
+  padding-bottom: 2rem;
+}

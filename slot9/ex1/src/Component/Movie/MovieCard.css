@@ -1,0 +1,52 @@
+.movie-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.movie-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.movie-card .card-img-top {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.movie-card:hover .card-img-top {
+  opacity: 0.9;
+}
+
+.movie-details {
+  margin-bottom: 1rem;
+}
+
+.movie-details p {
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.movie-card .btn {
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.movie-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #212529;
+}
+
+.movie-card .card-text {
+  font-size: 0.9rem;
+  color: #6c757d;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
+.movie-card .badge {
+  font-size: 0.75rem;
+  margin-right: 0.25rem;
+}
